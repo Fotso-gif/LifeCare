@@ -1,0 +1,39 @@
+<div class="sidebar">
+  <h3 class="sidebar-title">Menu</h3>
+  <ul class="sidebar-menu">
+    <li>
+      <a href="{{url_for ('main.dashboard')}}" class="active"><i class="fas fa-tachometer-alt"></i>Tableau de bord</a>
+    </li>
+    <li>
+      <a href="{{url_for ('main.profile')}}">
+      <i class="fas fa-user"></i>Mon profil</a>
+    </li>
+    <li>
+      <a href="{{url_for ('main.diagnostic')}}"><i class="fas fa-notes-medical"></i>Mes diagnostics</a>
+    </li>
+    <!-- Admin/Doctor specific menu --> 
+    {% if current_user.status !='patient' %}
+    <li>
+      <a href="{{ url_for ('main.gestion_maladies')}}"><i class="fas fa-disease"></i>Gestion maladies</a>
+    </li>
+    <li>
+      <a href="#symptomes"><i class="fas fa-head-side-cough"></i>Gestion symptômes</a>
+    </li>
+    <li>
+      <a href="#utilisateurs"><i class="fas fa-users"></i>Gestion utilisateurs</a></li> 
+    {% endif %}
+    </ul></div>
+<script>document.addEventListener("DOMContentLoaded", function () {
+    const sidebarLinks=document.querySelectorAll(".sidebar-menu li a");
+    sidebarLinks.forEach((link)=> {
+        link.addEventListener("click", function () {
+            sidebarLinks.forEach((l)=> l.classList.remove("active"));
+            this.classList.add("active");
+        }
+        );
+    }
+    );
+}
+
+);
+</script>

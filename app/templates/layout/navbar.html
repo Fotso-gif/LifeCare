@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="{{url_for('main.index')}}" class="logo">
+      <i class="fas fa-heartbeat"></i>
+      Life Care
+    </a>
+    <div class="nav-links">
+      <a href="{{url_for('main.dashboard')}}"
+        ><i class="fas fa-home"></i> Dashboard</a
+      >
+      <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+      <!--<a href="#"><i class="fas fa-cog"></i> Paramètres</a>-->
+      <div class="user-info">
+        <div class="user-avatar">{{ user.avatar }}</div>
+        <span>{{ user.username }}</span>
+      </div>
+      <a href="{{url_for ('main.logout')}}"
+        ><i class="fas fa-sign-out-alt"></i
+      ></a>
+    </div>
+  </div>
+</nav>

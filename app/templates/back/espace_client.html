@@ -1,0 +1,507 @@
+{% extends "layout/main.html" %} {% block title %}Espace Client{% endblock title
+%} {% block main %}
+<div class="content">
+  <!-- Dashboard Content (default view) -->
+  <div id="dashboard-content">
+    <div class="content-header">
+      <h2 class="content-title">
+        <i class="fas fa-tachometer-alt"></i> Tableau de bord
+      </h2>
+      <div class="content-actions">
+        <button class="btn btn-primary">
+          <i class="fas fa-plus"></i> Nouveau diagnostic
+        </button>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <h3 class="card-title">
+          <i class="fas fa-disease"></i> Maladies diagnostiquées
+        </h3>
+        <p class="card-text">
+          {% if is_admin %} Total de {{ maladies|length }} maladie{{ 's' if
+          maladies|length > 1 else '' }} dans la base. {% else %} Vous avez été
+          diagnostiqué avec {{ maladies|length }} maladie{{ 's' if
+          maladies|length > 1 else '' }} différente{{ 's' if maladies|length > 1
+          else '' }}. {% endif %}
+        </p>
+        <a href="#" class="btn btn-turquoise btn-sm">Voir détails</a>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">
+          <i class="fas fa-calendar-check"></i> Prochain rendez-vous
+        </h3>
+        <p class="card-text">
+          {% if user.status == 'admin' or user.status == 'docteur' %} Gestion
+          des rendez-vous disponible. {% else %} Vous avez un rendez-vous le
+          15/06/2024 à 14h30 avec le Dr. Martin. {% endif %}
+        </p>
+        <a href="#" class="btn btn-turquoise btn-sm">Voir agenda</a>
+      </div>
+
+      <div class="card">
+        <h3 class="card-title">
+          <i class="fas fa-file-prescription"></i> Ordonnances
+        </h3>
+        <p class="card-text">
+          {% if is_admin %} Gestion des ordonnances disponible. {% else %} Vous
+          avez 2 ordonnances actives. {% endif %}
+        </p>
+        <a href="#" class="btn btn-turquoise btn-sm">Consulter</a>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom: 1rem; color: var(--primary-blue)">
+      <i class="fas fa-history"></i> Historique récent
+    </h3>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if is_admin %}
+          <!-- Données simulées pour admin/docteur -->
+          <tr>
+            <td>{{ date_du_jour }}</td>
+            <td>Gestion</td>
+            <td>Dernière connexion administrative</td>
+            <td><span class="badge badge-success">Actif</span></td>
+            <td class="action-btns">
+              <button class="btn btn-primary btn-sm">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+          {% else %}
+          <!-- Données pour les patients -->
+          <tr>
+            <td>10/06/2024</td>
+            <td>Diagnostic</td>
+            <td>Analyse des symptômes: fièvre, toux</td>
+            <td><span class="badge badge-success">Terminé</span></td>
+            <td class="action-btns">
+              <button class="btn btn-primary btn-sm">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-turquoise btn-sm">
+                <i class="fas fa-download"></i>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>05/06/2024</td>
+            <td>Rendez-vous</td>
+            <td>Consultation générale</td>
+            <td><span class="badge badge-success">Terminé</span></td>
+            <td class="action-btns">
+              <button class="btn btn-primary btn-sm">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>01/06/2024</td>
+            <td>Analyse</td>
+            <td>Résultats sanguins</td>
+            <td><span class="badge badge-primary">En attente</span></td>
+            <td class="action-btns">
+              <button class="btn btn-primary btn-sm">
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Disease Management Content (for admin/doctor only) -->
+  {% if is_admin %}
+  <div id="maladie-content" style="display: none">
+    <div class="content-header">
+      <h2 class="content-title">
+        <i class="fas fa-disease"></i> Gestion des maladies
+      </h2>
+      <div class="content-actions">
+        <button id="addMaladieBtn" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Ajouter une maladie
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Symptômes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for maladie in maladies %}
+          <tr>
+            <td>{{ maladie.id }}</td>
+            <td>{{ maladie.nom }}</td>
+            <td>
+              {{ maladie.description[:50] }}{% if maladie.description|length >
+              50 %}...{% endif %}
+            </td>
+            <td>
+              {% if maladie.symptomes %} {{ maladie.symptomes[:3]|join(', ')
+              }}{% if maladie.symptomes|length > 3 %}...{% endif %} {% else %}
+              Non spécifiés {% endif %}
+            </td>
+            <td class="action-btns">
+              <button
+                class="btn btn-primary btn-sm"
+                onclick="viewMaladie({{ maladie.id }})"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+              <button
+                class="btn btn-turquoise btn-sm"
+                onclick="editMaladie({{ maladie.id }})"
+              >
+                <i class="fas fa-edit"></i>
+              </button>
+              <button
+                class="btn btn-danger btn-sm"
+                onclick="deleteMaladie({{ maladie.id }})"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center">Aucune maladie enregistrée</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Add Disease Form (hidden by default) -->
+    <div id="maladie-form" style="display: none; margin-top: 2rem">
+      <div class="form-container">
+        <h3 style="margin-bottom: 1.5rem; color: var(--primary-blue)">
+          <i class="fas fa-plus-circle"></i> Ajouter une nouvelle maladie
+        </h3>
+
+        <form id="addMaladieForm">
+          <div class="form-group">
+            <label for="maladie-nom" class="form-label"
+              >Nom de la maladie</label
+            >
+            <input type="text" id="maladie-nom" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="maladie-description" class="form-label"
+              >Description</label
+            >
+            <textarea
+              id="maladie-description"
+              class="form-control"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="maladie-soin" class="form-label"
+              >Soins recommandés</label
+            >
+            <textarea
+              id="maladie-soin"
+              class="form-control"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Symptômes associés</label>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 0.5rem;
+              "
+            >
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="symptome-fievre"
+                  class="form-check-input"
+                />
+                <label for="symptome-fievre" class="form-check-label"
+                  >Fièvre</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="symptome-toux"
+                  class="form-check-input"
+                />
+                <label for="symptome-toux" class="form-check-label">Toux</label>
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="symptome-fatigue"
+                  class="form-check-input"
+                />
+                <label for="symptome-fatigue" class="form-check-label"
+                  >Fatigue</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="symptome-douleurs"
+                  class="form-check-input"
+                />
+                <label for="symptome-douleurs" class="form-check-label"
+                  >Douleurs musculaires</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="symptome-nausees"
+                  class="form-check-input"
+                />
+                <label for="symptome-nausees" class="form-check-label"
+                  >Nausées</label
+                >
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="symptome-maux-tete"
+                  class="form-check-input"
+                />
+                <label for="symptome-maux-tete" class="form-check-label"
+                  >Maux de tête</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Galerie d'images</label>
+            <input
+              type="file"
+              id="maladie-images"
+              class="form-control"
+              multiple
+              accept="image/*"
+            />
+            <small class="text-muted"
+              >Vous pouvez sélectionner plusieurs images</small
+            >
+            <div
+              id="image-preview"
+              class="gallery-grid"
+              style="margin-top: 1rem"
+            >
+              <!-- Images preview will appear here -->
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button type="button" id="cancelMaladieBtn" class="btn btn-danger">
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Patient Disease View (for patients only) -->
+  {% if not is_admin and maladies %}
+  <div id="patient-maladies" style="display: none; margin-top: 2rem">
+    <div class="content-header">
+      <h2 class="content-title">
+        <i class="fas fa-disease"></i> Mes diagnostics
+      </h2>
+    </div>
+
+    <div class="cards-grid">
+      {% for maladie in maladies %}
+      <div class="card">
+        <h3 class="card-title">
+          <i class="fas fa-heartbeat"></i> {{ maladie.nom }}
+        </h3>
+        <p class="card-text">
+          {{ maladie.description[:100] }}{% if maladie.description|length > 100
+          %}...{% endif %}
+        </p>
+        <div style="margin-top: 1rem">
+          {% if maladie.symptomes %}
+          <small class="text-muted">
+            <strong>Symptômes:</strong> {{ maladie.symptomes[:2]|join(', ') }}
+          </small>
+          {% endif %}
+        </div>
+        <a href="#" class="btn btn-turquoise btn-sm" style="margin-top: 1rem"
+          >Voir détails</a
+        >
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Gestion du formulaire d'ajout de maladie (admin/docteur uniquement)
+    {% if is_admin %}
+    const addMaladieBtn = document.getElementById('addMaladieBtn');
+    const cancelMaladieBtn = document.getElementById('cancelMaladieBtn');
+    const maladieForm = document.getElementById('maladie-form');
+    const addMaladieForm = document.getElementById('addMaladieForm');
+    const imageInput = document.getElementById('maladie-images');
+    const imagePreview = document.getElementById('image-preview');
+
+    // Afficher/masquer le formulaire
+    if (addMaladieBtn) {
+      addMaladieBtn.addEventListener('click', function() {
+        maladieForm.style.display = maladieForm.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+
+    if (cancelMaladieBtn) {
+      cancelMaladieBtn.addEventListener('click', function() {
+        maladieForm.style.display = 'none';
+        addMaladieForm.reset();
+        imagePreview.innerHTML = '';
+      });
+    }
+
+    // Prévisualisation des images
+    if (imageInput) {
+      imageInput.addEventListener('change', function(e) {
+        imagePreview.innerHTML = '';
+        const files = Array.from(e.target.files);
+
+        files.forEach(file => {
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const imgDiv = document.createElement('div');
+              imgDiv.className = 'gallery-item';
+              imgDiv.innerHTML = `
+                <img src="${e.target.result}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+                <button type="button" onclick="this.parentElement.remove()" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer;">×</button>
+              `;
+              imgDiv.style.position = 'relative';
+              imgDiv.style.display = 'inline-block';
+              imgDiv.style.margin = '5px';
+              imagePreview.appendChild(imgDiv);
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      });
+    }
+
+    // Soumission du formulaire
+    if (addMaladieForm) {
+      addMaladieForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Collecte des symptômes sélectionnés
+        const symptomes = [];
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+        checkboxes.forEach(checkbox => {
+          symptomes.push(checkbox.nextElementSibling.textContent);
+        });
+
+        const formData = {
+          nom: document.getElementById('maladie-nom').value,
+          description: document.getElementById('maladie-description').value,
+          soin: document.getElementById('maladie-soin').value,
+          symptomes: symptomes
+        };
+
+        console.log('Nouvelle maladie:', formData);
+
+        // Ici vous pourrez ajouter l'appel AJAX pour sauvegarder
+        alert('Maladie ajoutée avec succès! (Fonctionnalité de sauvegarde à implémenter)');
+
+        // Réinitialiser le formulaire
+        addMaladieForm.reset();
+        imagePreview.innerHTML = '';
+        maladieForm.style.display = 'none';
+      });
+    }
+    {% endif %}
+
+    // Mise à jour de l'heure actuelle
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleString('fr-FR');
+      const statusElements = document.querySelectorAll('.badge');
+
+      // Vous pouvez ajouter ici la logique pour mettre à jour les statuts en temps réel
+    }
+
+    // Mettre à jour l'heure toutes les minutes
+    setInterval(updateTime, 60000);
+    updateTime();
+  });
+
+  // Fonctions pour la gestion des maladies (admin/docteur)
+  {% if is_admin %}
+  function viewMaladie(id) {
+    console.log('Voir maladie ID:', id);
+    // Implémentation à ajouter
+    alert('Fonctionnalité de visualisation à implémenter pour la maladie ID: ' + id);
+  }
+
+  function editMaladie(id) {
+    console.log('Éditer maladie ID:', id);
+    // Implémentation à ajouter
+    alert('Fonctionnalité d\'édition à implémenter pour la maladie ID: ' + id);
+  }
+
+  function deleteMaladie(id) {
+    id = parseInt(id);
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette maladie?')) {
+      console.log('Supprimer maladie ID:', id);
+      // Implémentation à ajouter
+      alert('Fonctionnalité de suppression à implémenter pour la maladie ID: ' + id);
+      window.location.href = '/maladie/supprimer/' + id;
+    }
+  }
+  {% endif %}
+
+  // Fonction pour afficher les données utilisateur (pour debug)
+  console.log('Données utilisateur:', {
+    username: '{{ user.username }}',
+    email: '{{ user.email }}',
+    status: '{{ user.status }}',
+    is_admin: {{ 'true' if is_admin else 'false' }},
+    nb_maladies: {{ maladies|length }}
+  });
+</script>
+
+{% endblock main %}

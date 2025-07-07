@@ -1,0 +1,127 @@
+{% extends "layout/main.html" %} {% block main %}
+<!-- Style supplémentaire -->
+<style>
+  .main-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding: 30px;
+  }
+
+  .form-header {
+    color: #0060b1;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  .symptom-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+
+  .symptom-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+
+  .symptom-item:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+  }
+
+  .symptom-item input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  .btn-primary {
+    background-color: #2895f1;
+    border-color: #2895f1;
+  }
+
+  .btn-primary:hover {
+    background-color: #0060b1;
+    border-color: #0060b1;
+  }
+</style>
+<!-- Navigation simplifiée -->
+
+<!-- Contenu principal -->
+<div class="container main-container">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <h2 class="form-header">Formulaire de Diagnostic</h2>
+
+      <form
+        id="symptomForm"
+        method="POST"
+        action="{{ url_for('main.diagnostic') }}"
+      >
+        {{ form.hidden_tag() }}
+
+        <!-- Informations de base -->
+        <div class="mb-4">
+          <h5>Informations personnelles</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              {{ form.age.label(class="form-label") }} {{
+              form.age(class="form-control") }} {% for error in form.age.errors
+              %}
+              <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+            <div class="col-md-6 mb-3">
+              {{ form.gender.label(class="form-label") }} {{
+              form.gender(class="form-select") }} {% for error in
+              form.gender.errors %}
+              <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Liste des symptômes -->
+        <div class="mb-4">
+          <h5>Symptômes principaux</h5>
+          <p>Sélectionnez les symptômes que vous ressentez :</p>
+
+          {% for error in form.symptoms.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <!-- Symptômes supplémentaires -->
+        <div class="mb-4">
+          <h5>Détails supplémentaires</h5>
+          <div class="mb-3">
+            {{ form.symptom_duration.label(class="form-label") }} {{
+            form.symptom_duration(class="form-select") }} {% for error in
+            form.symptom_duration.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.additional_info.label(class="form-label") }} {{
+            form.additional_info(class="form-control", rows=3) }} {% for error
+            in form.additional_info.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-stethoscope me-2"></i> Obtenir un diagnostic
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %} Life Care - Espace Client{% endblock %}</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    {% block styles %}{% endblock %}
+
+    <style>
+      :root {
+        --primary-blue: #0060b1;
+        --primary-blue-light: #0077cc;
+        --white: #ffffff;
+        --turquoise: #40e0d0;
+        --turquoise-dark: #30c9b9;
+        --gray-light: #f5f7fa;
+        --gray-medium: #e5e7eb;
+        --gray-dark: #6b7280;
+        --text-dark: #1f2937;
+        --danger: #e63946;
+        --success: #2a9d8f;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-dark);
+        background-color: var(--gray-light);
+        min-height: 100vh;
+      }
+
+      /* Navigation */
+      .navbar {
+        background: var(--white);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 1rem 0;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-blue);
+        text-decoration: none;
+      }
+
+      .logo i {
+        margin-right: 0.5rem;
+        color: var(--turquoise);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--primary-blue);
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        background-color: var(--turquoise);
+        color: var(--white);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--turquoise);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      /* Main Container */
+      .main-container {
+        margin-top: 80px;
+        padding: 2rem;
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Dashboard */
+      .dashboard {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        height: fit-content;
+      }
+
+      .sidebar-title {
+        font-size: 1.2rem;
+        color: var(--primary-blue);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--turquoise);
+      }
+
+      .sidebar-menu {
+        list-style: none;
+      }
+
+      .sidebar-menu li {
+        margin-bottom: 0.5rem;
+      }
+
+      .sidebar-menu a {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--text-dark);
+        text-decoration: none;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .sidebar-menu a:hover,
+      .sidebar-menu a.active {
+        background-color: var(--turquoise);
+        color: var(--white);
+      }
+
+      .sidebar-menu a i {
+        margin-right: 0.5rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: auto;
+      }
+
+      .badge-primary {
+        background-color: var(--primary-blue);
+        color: var(--white);
+      }
+
+      .badge-danger {
+        background-color: var(--danger);
+        color: var(--white);
+      }
+
+      .badge-success {
+        background-color: var(--success);
+        color: var(--white);
+      }
+
+      /* Content Area */
+      .content {
+        background: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--gray-medium);
+      }
+
+      .content-title {
+        font-size: 1.8rem;
+        color: var(--primary-blue);
+      }
+
+      .btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary-blue);
+        color: var(--white);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-blue-light);
+        transform: translateY(-2px);
+      }
+
+      .btn-turquoise {
+        background-color: var(--turquoise);
+        color: var(--white);
+      }
+
+      .btn-turquoise:hover {
+        background-color: var(--turquoise-dark);
+        transform: translateY(-2px);
+      }
+
+      /* Cards */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        background: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--turquoise);
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        color: var(--primary-blue);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .card-title i {
+        color: var(--turquoise);
+      }
+
+      .card-text {
+        color: var(--gray-dark);
+        margin-bottom: 1rem;
+      }
+
+      /* Table */
+      .table-responsive {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+      }
+
+      th,
+      td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--gray-medium);
+      }
+
+      th {
+        background-color: var(--primary-blue);
+        color: var(--white);
+        font-weight: 600;
+      }
+
+      tr:hover {
+        background-color: rgba(64, 224, 208, 0.1);
+      }
+
+      .action-btns {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
+
+      .btn-danger {
+        background-color: var(--danger);
+        color: var(--white);
+      }
+
+      .btn-danger:hover {
+        background-color: #c1121f;
+        transform: translateY(-2px);
+      }
+
+      /* Form */
+      .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--gray-medium);
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--turquoise);
+        box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.2);
+      }
+
+      textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .form-check {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-check-input {
+        margin-right: 0.5rem;
+        accent-color: var(--turquoise);
+      }
+
+      .form-check-label {
+        user-select: none;
+      }
+
+      .form-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--gray-medium);
+      }
+
+      /* Gallery */
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .gallery-item {
+        position: relative;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .gallery-img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      .gallery-item:hover .gallery-img {
+        transform: scale(1.05);
+      }
+
+      .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 0.5rem;
+        display: flex;
+        justify-content: center;
+      }
+
+      .gallery-btn {
+        background: none;
+        border: none;
+        color: var(--white);
+        cursor: pointer;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .gallery-btn:hover {
+        color: var(--turquoise);
+      }
+
+      /* Responsive */
+      @media (max-width: 992px) {
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          order: 2;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-container {
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1rem;
+        }
+
+        .nav-links {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .content-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    {% include "layout/navbar.html" %}
+
+    <!-- Main Container -->
+    <div class="main-container">
+      <div class="dashboard">
+        <!-- Sidebar -->
+        {% include "layout/slidebar.html" %}
+        <!-- Content Area -->
+        {% block main %}{% endblock %}
+      </div>
+    </div>
+
+    <script>
+      // Gestion des vues selon le rôle
+      document.addEventListener("DOMContentLoaded", function () {
+        // Simuler un utilisateur admin (à remplacer par votre logique réelle)
+        const userRole = "admin"; // Peut être 'patient', 'docteur', 'infirmiere'
+
+        // Afficher les sections appropriées selon le rôle
+        if (userRole === "admin" || userRole === "docteur") {
+          document.getElementById("maladie-content").style.display = "block";
+          document.getElementById("dashboard-content").style.display = "none";
+        }
+
+        // Gestion du formulaire d'ajout de maladie
+        const addMaladieBtn = document.getElementById("addMaladieBtn");
+        const maladieForm = document.getElementById("maladie-form");
+        const cancelMaladieBtn = document.getElementById("cancelMaladieBtn");
+
+        if (addMaladieBtn && maladieForm) {
+          addMaladieBtn.addEventListener("click", function () {
+            maladieForm.style.display = "block";
+            window.scrollTo(0, document.body.scrollHeight);
+          });
+
+          cancelMaladieBtn.addEventListener("click", function () {
+            maladieForm.style.display = "none";
+          });
+        }
+
+        // Prévisualisation des images
+        const imageInput = document.getElementById("maladie-images");
+        const imagePreview = document.getElementById("image-preview");
+
+        if (imageInput && imagePreview) {
+          imageInput.addEventListener("change", function () {
+            imagePreview.innerHTML = "";
+
+            if (this.files) {
+              Array.from(this.files).forEach((file) => {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                  const imgContainer = document.createElement("div");
+                  imgContainer.className = "gallery-item";
+
+                  const img = document.createElement("img");
+                  img.src = e.target.result;
+                  img.className = "gallery-img";
+
+                  const overlay = document.createElement("div");
+                  overlay.className = "gallery-overlay";
+
+                  const deleteBtn = document.createElement("button");
+                  deleteBtn.className = "gallery-btn";
+                  deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                  deleteBtn.addEventListener("click", function () {
+                    imgContainer.remove();
+                  });
+
+                  overlay.appendChild(deleteBtn);
+                  imgContainer.appendChild(img);
+                  imgContainer.appendChild(overlay);
+                  imagePreview.appendChild(imgContainer);
+                };
+
+                reader.readAsDataURL(file);
+              });
+            }
+          });
+        }
+
+        // Gestion de la soumission du formulaire
+        const addMaladieForm = document.getElementById("addMaladieForm");
+
+        if (addMaladieForm) {
+          addMaladieForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // Ici, vous ajouteriez la logique pour envoyer les données au serveur
+            alert("Maladie enregistrée avec succès!");
+            this.reset();
+            imagePreview.innerHTML = "";
+            maladieForm.style.display = "none";
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+# docker-compose.yml
+
+services:
+  web:
+    build: .
+    image: lifecare_flask
+    container_name: flask_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine # ✅ image plus légère et compatible ARM
+    platform: linux/amd64
+    container_name: lifecare_db
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=lifecare
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - "5432:5432" # ✅ Ajout utile pour debug ou tests externes
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
